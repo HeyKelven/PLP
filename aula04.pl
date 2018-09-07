@@ -16,6 +16,12 @@ binario(X) :- X >= 2 ->
                      Z is X mod 2, write(Z));
                      write(X).
 
+membro(X,[X|_]).
+membro(X,[Y|R]) :- X \= Y, membro(X,R).
+
+notmembro(_,[]).
+notmembro(X,[Y|R]) :- X \= Y, notmembro(X,R).
+
 fibo(0,0).
 fibo(1,1).
 fibo(X,R) :- X >= 2 ->
@@ -59,8 +65,16 @@ separa([0|H],A,B):- separa(H,A,B).
 separa([X|H],[X|P],N) :- X =\= 0, X > 0, separa(H,P,N).
 separa([X|H],P,[X|N]) :- X =\= 0, X < 0, separa(H,P,N).
 
-subset([X|_],[X|_]).
-subset([X|H],[Y|Z]) :- subset([X],Z); subset(H, [Y|Z]).
+subset1([],_).
+subset1([X|H],Z) :- membro(X,Z), subset1(H, Z).
 
 uniao([],X,X).
-uniao([X|H], Y, Z) :- subset([X],Y) -> uniao(H,Y,Z) ; uniao(H,Y,S), concatenar([X],S,Z).
+uniao([X|H], Y, Z) :- subset1([X],Y) -> uniao(H,Y,Z) ; uniao(H,Y,S), concatenar([X],S,Z).
+
+interseccao([],_,[]).
+interseccao([X|H],T,[X|R]) :- interseccao(H,T,R), membro(X,T).
+interseccao([X|H],T,R) :- interseccao(H,T,R), notmembro(X,T).
+
+diferente([],_,[]).
+diferente([X|H],T,[X|R]) :- notmembro(X,T), diferente(H,T,R).
+diferente([X|H],T,R) :- membro(X,T), diferente(H,T,R).
